@@ -1,0 +1,46 @@
+name: 'Lissto Update'
+description: 'Update an existing Lissto stack with new images'
+author: 'lissto-dev'
+
+branding:
+  icon: 'refresh-cw'
+  color: 'orange'
+
+inputs:
+  api-key:
+    description: 'Lissto API key'
+    required: true
+  api-url:
+    description: 'Lissto API URL'
+    required: true
+  environment:
+    description: 'Environment where the stack is deployed'
+    required: true
+  stack:
+    description: 'Stack name to update (optional if only one stack exists)'
+    required: false
+  branch:
+    description: 'Git branch for image resolution'
+    required: false
+  tag:
+    description: 'Git tag for image resolution'
+    required: false
+  commit:
+    description: 'Git commit SHA for image resolution'
+    required: false
+  cli-version:
+    description: 'Lissto CLI version to use (default: latest)'
+    required: false
+    default: 'latest'
+
+outputs:
+  stack-id:
+    description: 'The updated stack ID'
+  updated-services:
+    description: 'Comma-separated list of updated services'
+  status:
+    description: 'Update status (success/no-changes)'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

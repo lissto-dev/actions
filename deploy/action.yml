@@ -1,0 +1,53 @@
+name: 'Lissto Deploy'
+description: 'Deploy to Lissto (creates blueprint and stack)'
+author: 'lissto-dev'
+
+branding:
+  icon: 'upload-cloud'
+  color: 'green'
+
+inputs:
+  api-key:
+    description: 'Lissto API key'
+    required: true
+  api-url:
+    description: 'Lissto API URL'
+    required: true
+  compose-file:
+    description: 'Path to docker-compose file'
+    required: false
+    default: 'docker-compose.yml'
+  environment:
+    description: 'Target environment name'
+    required: true
+  repository:
+    description: 'Repository URL (auto-detected from GitHub context)'
+    required: false
+  branch:
+    description: 'Git branch for image resolution'
+    required: false
+  tag:
+    description: 'Git tag for image resolution'
+    required: false
+  commit:
+    description: 'Git commit SHA for image resolution'
+    required: false
+  blueprint-id:
+    description: 'Existing blueprint ID (skips blueprint creation)'
+    required: false
+  cli-version:
+    description: 'Lissto CLI version to use (default: latest)'
+    required: false
+    default: 'latest'
+
+outputs:
+  blueprint-id:
+    description: 'The blueprint ID (created or provided)'
+  stack-id:
+    description: 'The created stack ID'
+  stack-url:
+    description: 'Primary URL of the deployed stack'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
