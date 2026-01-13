@@ -1,10 +1,6 @@
 name: 'Lissto Deploy'
-description: 'Deploy to Lissto (creates blueprint and stack)'
-author: 'lissto-dev'
-
-branding:
-  icon: 'upload-cloud'
-  color: 'green'
+description: 'Deploy a stack to Lissto (creates blueprint if needed)'
+author: 'Lissto'
 
 inputs:
   api-key:
@@ -13,41 +9,47 @@ inputs:
   api-url:
     description: 'Lissto API URL'
     required: true
+  environment:
+    description: 'Target environment'
+    required: true
   compose-file:
     description: 'Path to docker-compose file'
-    required: false
     default: 'docker-compose.yml'
-  environment:
-    description: 'Target environment name'
-    required: true
-  repository:
-    description: 'Repository URL (auto-detected from GitHub context)'
-    required: false
-  branch:
-    description: 'Git branch for image resolution'
-    required: false
-  tag:
-    description: 'Git tag for image resolution'
-    required: false
-  commit:
-    description: 'Git commit SHA for image resolution'
-    required: false
   blueprint-id:
     description: 'Existing blueprint ID (skips blueprint creation)'
     required: false
-  cli-version:
-    description: 'Lissto CLI version to use (default: latest)'
+  branch:
+    description: 'Git branch for image version'
     required: false
-    default: 'latest'
+  tag:
+    description: 'Image tag'
+    required: false
+  commit:
+    description: 'Commit SHA for image version'
+    required: false
 
 outputs:
   blueprint-id:
-    description: 'The blueprint ID (created or provided)'
+    description: 'Blueprint ID'
   stack-id:
-    description: 'The created stack ID'
+    description: 'Created stack ID'
   stack-url:
-    description: 'Primary URL of the deployed stack'
+    description: 'Stack URL (if exposed)'
 
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: '../src/Dockerfile'
+  env:
+    LISSTO_ACTION: deploy
+    INPUT_API_KEY: ${{ inputs.api-key }}
+    INPUT_API_URL: ${{ inputs.api-url }}
+    INPUT_ENVIRONMENT: ${{ inputs.environment }}
+    INPUT_COMPOSE_FILE: ${{ inputs.compose-file }}
+    INPUT_BLUEPRINT_ID: ${{ inputs.blueprint-id }}
+    INPUT_BRANCH: ${{ inputs.branch }}
+    INPUT_TAG: ${{ inputs.tag }}
+    INPUT_COMMIT: ${{ inputs.commit }}
+
+branding:
+  icon: 'upload-cloud'
+  color: 'green'

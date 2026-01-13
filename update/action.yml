@@ -1,10 +1,6 @@
 name: 'Lissto Update'
 description: 'Update an existing Lissto stack with new images'
-author: 'lissto-dev'
-
-branding:
-  icon: 'refresh-cw'
-  color: 'orange'
+author: 'Lissto'
 
 inputs:
   api-key:
@@ -14,33 +10,42 @@ inputs:
     description: 'Lissto API URL'
     required: true
   environment:
-    description: 'Environment where the stack is deployed'
+    description: 'Target environment'
     required: true
   stack:
-    description: 'Stack name to update (optional if only one stack exists)'
+    description: 'Stack name (optional, updates all if not specified)'
     required: false
   branch:
-    description: 'Git branch for image resolution'
+    description: 'Git branch for image version'
     required: false
   tag:
-    description: 'Git tag for image resolution'
+    description: 'Image tag'
     required: false
   commit:
-    description: 'Git commit SHA for image resolution'
+    description: 'Commit SHA for image version'
     required: false
-  cli-version:
-    description: 'Lissto CLI version to use (default: latest)'
-    required: false
-    default: 'latest'
 
 outputs:
   stack-id:
-    description: 'The updated stack ID'
+    description: 'Updated stack ID'
+  status:
+    description: 'Update status'
   updated-services:
     description: 'Comma-separated list of updated services'
-  status:
-    description: 'Update status (success/no-changes)'
 
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: '../src/Dockerfile'
+  env:
+    LISSTO_ACTION: update
+    INPUT_API_KEY: ${{ inputs.api-key }}
+    INPUT_API_URL: ${{ inputs.api-url }}
+    INPUT_ENVIRONMENT: ${{ inputs.environment }}
+    INPUT_STACK: ${{ inputs.stack }}
+    INPUT_BRANCH: ${{ inputs.branch }}
+    INPUT_TAG: ${{ inputs.tag }}
+    INPUT_COMMIT: ${{ inputs.commit }}
+
+branding:
+  icon: 'refresh-cw'
+  color: 'orange'

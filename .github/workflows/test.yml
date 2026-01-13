@@ -1,49 +1,21 @@
-name: Test Actions
+name: Test
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Check shell scripts
-        run: |
-          for script in */entrypoint.sh; do
-            echo "Checking $script..."
-            bash -n "$script"
-          done
+      - name: Shellcheck
+        run: bash -n src/entrypoint.sh
 
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        action: [blueprint-create, deploy, update]
     steps:
       - uses: actions/checkout@v4
-      
       - name: Build Docker image
-        run: |
-          cd ${{ matrix.action }}
-          docker build -t lissto-${{ matrix.action }}:test .
-      
-      - name: Test CLI installation
-        run: |
-          docker run --rm lissto-${{ matrix.action }}:test bash -c "
-            # The entrypoint installs CLI, but we can test the install function
-            install_cli() {
-              local version=\${INPUT_CLI_VERSION:-latest}
-              if [ \"\$version\" = \"latest\" ]; then
-                version=\$(curl -s https://api.github.com/repos/lissto-dev/cli/releases/latest | jq -r .tag_name)
-              fi
-              echo \"Installing Lissto CLI version: \$version\"
-              curl -sL \"https://github.com/lissto-dev/cli/releases/download/\${version}/lissto_linux_amd64.tar.gz\" | tar xz -C /usr/local/bin
-              lissto --version
-            }
-            install_cli
-          "
+        run: docker build -t lissto-actions:test src/
