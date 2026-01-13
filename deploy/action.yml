@@ -1,0 +1,47 @@
+name: 'Lissto Deploy'
+description: 'Deploy a stack to Lissto (creates blueprint if needed)'
+author: 'Lissto'
+
+inputs:
+  api-key:
+    description: 'Lissto API key'
+    required: true
+  api-url:
+    description: 'Lissto API URL'
+    required: true
+  compose-file:
+    description: 'Path to docker-compose file (optional, CLI auto-detects)'
+    required: false
+  blueprint-id:
+    description: 'Existing blueprint ID (skips blueprint creation)'
+    required: false
+  branch:
+    description: 'Git branch for image version'
+    required: false
+  cli-version:
+    description: 'Override CLI version (e.g., v0.5.0)'
+    required: false
+
+outputs:
+  blueprint-id:
+    description: 'Blueprint ID'
+  stack-id:
+    description: 'Created stack ID'
+  stack-url:
+    description: 'Stack URL (if exposed)'
+
+runs:
+  using: 'docker'
+  image: '../src/Dockerfile'
+  env:
+    LISSTO_ACTION: deploy
+    INPUT_API_KEY: ${{ inputs.api-key }}
+    INPUT_API_URL: ${{ inputs.api-url }}
+    INPUT_COMPOSE_FILE: ${{ inputs.compose-file }}
+    INPUT_BLUEPRINT_ID: ${{ inputs.blueprint-id }}
+    INPUT_BRANCH: ${{ inputs.branch }}
+    INPUT_CLI_VERSION: ${{ inputs.cli-version }}
+
+branding:
+  icon: 'box'
+  color: 'purple'

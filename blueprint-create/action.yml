@@ -1,0 +1,39 @@
+name: 'Lissto Blueprint Create'
+description: 'Create a Lissto blueprint from a docker-compose file'
+author: 'Lissto'
+
+inputs:
+  api-key:
+    description: 'Lissto API key'
+    required: true
+  api-url:
+    description: 'Lissto API URL'
+    required: true
+  compose-file:
+    description: 'Path to docker-compose file (optional, CLI auto-detects)'
+    required: false
+  branch:
+    description: 'Git branch (auto-detected from GITHUB_REF_NAME)'
+    required: false
+  cli-version:
+    description: 'Override CLI version (e.g., v0.5.0)'
+    required: false
+
+outputs:
+  blueprint-id:
+    description: 'Created blueprint ID'
+
+runs:
+  using: 'docker'
+  image: '../src/Dockerfile'
+  env:
+    LISSTO_ACTION: blueprint-create
+    INPUT_API_KEY: ${{ inputs.api-key }}
+    INPUT_API_URL: ${{ inputs.api-url }}
+    INPUT_COMPOSE_FILE: ${{ inputs.compose-file }}
+    INPUT_BRANCH: ${{ inputs.branch }}
+    INPUT_CLI_VERSION: ${{ inputs.cli-version }}
+
+branding:
+  icon: 'box'
+  color: 'purple'

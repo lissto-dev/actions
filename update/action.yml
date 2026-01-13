@@ -1,0 +1,39 @@
+name: 'Lissto Update'
+description: 'Update an existing Lissto stack with new images'
+author: 'Lissto'
+
+inputs:
+  api-key:
+    description: 'Lissto API key'
+    required: true
+  api-url:
+    description: 'Lissto API URL'
+    required: true
+  branch:
+    description: 'Git branch for image version'
+    required: false
+  cli-version:
+    description: 'Override CLI version (e.g., v0.5.0)'
+    required: false
+
+outputs:
+  stack-id:
+    description: 'Updated stack ID'
+  status:
+    description: 'Update status'
+  updated-services:
+    description: 'Comma-separated list of updated services'
+
+runs:
+  using: 'docker'
+  image: '../src/Dockerfile'
+  env:
+    LISSTO_ACTION: update
+    INPUT_API_KEY: ${{ inputs.api-key }}
+    INPUT_API_URL: ${{ inputs.api-url }}
+    INPUT_BRANCH: ${{ inputs.branch }}
+    INPUT_CLI_VERSION: ${{ inputs.cli-version }}
+
+branding:
+  icon: 'box'
+  color: 'purple'
