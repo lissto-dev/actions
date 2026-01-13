@@ -15,6 +15,9 @@ inputs:
   branch:
     description: 'Git branch (auto-detected from GITHUB_REF_NAME)'
     required: false
+  cli-version:
+    description: 'Override CLI version (e.g., v0.5.0). Uses image default if not set.'
+    required: false
 
 outputs:
   blueprint-id:
@@ -29,6 +32,7 @@ runs:
     INPUT_API_URL: ${{ inputs.api-url }}
     INPUT_COMPOSE_FILE: ${{ inputs.compose-file }}
     INPUT_BRANCH: ${{ inputs.branch }}
+    INPUT_CLI_VERSION: ${{ inputs.cli-version }}
 
 branding:
   icon: 'package'

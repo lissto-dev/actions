@@ -9,6 +9,13 @@ require() {
 }
 output() { echo "$1=$2" >> "$GITHUB_OUTPUT"; }
 
+# --- CLI Version Override ---
+if [ -n "$INPUT_CLI_VERSION" ]; then
+    echo "Installing Lissto CLI ${INPUT_CLI_VERSION}..."
+    curl -sL "https://github.com/lissto-dev/cli/releases/download/${INPUT_CLI_VERSION}/lissto_linux_amd64.tar.gz" | tar xz -C /usr/local/bin
+    lissto --version
+fi
+
 # --- Init ---
 export LISSTO_API_KEY="$INPUT_API_KEY" LISSTO_API_URL="$INPUT_API_URL"
 require INPUT_API_KEY INPUT_API_URL

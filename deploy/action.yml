@@ -27,6 +27,9 @@ inputs:
   commit:
     description: 'Commit SHA for image version'
     required: false
+  cli-version:
+    description: 'Override CLI version (e.g., v0.5.0). Uses image default if not set.'
+    required: false
 
 outputs:
   blueprint-id:
@@ -49,6 +52,7 @@ runs:
     INPUT_BRANCH: ${{ inputs.branch }}
     INPUT_TAG: ${{ inputs.tag }}
     INPUT_COMMIT: ${{ inputs.commit }}
+    INPUT_CLI_VERSION: ${{ inputs.cli-version }}
 
 branding:
   icon: 'upload-cloud'

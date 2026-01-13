@@ -96,6 +96,7 @@ jobs:
 |-------|----------|-------------|
 | `api-key` | ✅ | Lissto API key |
 | `api-url` | ✅ | Lissto API URL |
+| `cli-version` | | Override CLI version (e.g., `v0.5.0`) |
 
 ### deploy
 
