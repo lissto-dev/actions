@@ -9,26 +9,17 @@ inputs:
   api-url:
     description: 'Lissto API URL'
     required: true
-  environment:
-    description: 'Target environment'
-    required: true
   compose-file:
-    description: 'Path to docker-compose file'
-    default: 'docker-compose.yml'
+    description: 'Path to docker-compose file (optional, CLI auto-detects)'
+    required: false
   blueprint-id:
     description: 'Existing blueprint ID (skips blueprint creation)'
     required: false
   branch:
     description: 'Git branch for image version'
     required: false
-  tag:
-    description: 'Image tag'
-    required: false
-  commit:
-    description: 'Commit SHA for image version'
-    required: false
   cli-version:
-    description: 'Override CLI version (e.g., v0.5.0). Uses image default if not set.'
+    description: 'Override CLI version (e.g., v0.5.0)'
     required: false
 
 outputs:
@@ -46,14 +37,11 @@ runs:
     LISSTO_ACTION: deploy
     INPUT_API_KEY: ${{ inputs.api-key }}
     INPUT_API_URL: ${{ inputs.api-url }}
-    INPUT_ENVIRONMENT: ${{ inputs.environment }}
     INPUT_COMPOSE_FILE: ${{ inputs.compose-file }}
     INPUT_BLUEPRINT_ID: ${{ inputs.blueprint-id }}
     INPUT_BRANCH: ${{ inputs.branch }}
-    INPUT_TAG: ${{ inputs.tag }}
-    INPUT_COMMIT: ${{ inputs.commit }}
     INPUT_CLI_VERSION: ${{ inputs.cli-version }}
 
 branding:
-  icon: 'upload-cloud'
-  color: 'green'
+  icon: 'box'
+  color: 'purple'

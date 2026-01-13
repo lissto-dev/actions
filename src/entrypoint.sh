@@ -21,16 +21,18 @@ export LISSTO_API_KEY="$INPUT_API_KEY" LISSTO_API_URL="$INPUT_API_URL"
 require INPUT_API_KEY INPUT_API_URL
 
 BRANCH="${INPUT_BRANCH:-${GITHUB_REF_NAME}}"
-COMPOSE="${INPUT_COMPOSE_FILE:-docker-compose.yml}"
+AUTHOR="${GITHUB_ACTOR}"
 
 # --- Actions ---
 action_blueprint_create() {
-    [ ! -f "$COMPOSE" ] && { echo "::error::Compose file not found: $COMPOSE"; exit 1; }
+    echo "📦 Creating blueprint..."
     
-    echo "📦 Creating blueprint from $COMPOSE"
-    result=$(lissto blueprint create "$COMPOSE" --output json \
-        ${BRANCH:+--branch "$BRANCH"} \
-        ${GITHUB_ACTOR:+--author "$GITHUB_ACTOR"})
+    CMD="lissto blueprint create --output json"
+    [ -n "$INPUT_COMPOSE_FILE" ] && CMD="$CMD $INPUT_COMPOSE_FILE"
+    [ -n "$BRANCH" ] && CMD="$CMD --branch $BRANCH"
+    [ -n "$AUTHOR" ] && CMD="$CMD --author $AUTHOR"
+    
+    result=$(eval $CMD)
     
     id=$(echo "$result" | jq -r '.id')
     [ -z "$id" ] || [ "$id" = "null" ] && { echo "::error::Failed to parse blueprint ID"; echo "$result"; exit 1; }
@@ -40,26 +42,26 @@ action_blueprint_create() {
 }
 
 action_deploy() {
-    require INPUT_ENVIRONMENT
-    
     BLUEPRINT_ID="${INPUT_BLUEPRINT_ID}"
     
     if [ -z "$BLUEPRINT_ID" ]; then
-        [ ! -f "$COMPOSE" ] && { echo "::error::Compose file not found: $COMPOSE"; exit 1; }
-        echo "📦 Creating blueprint from $COMPOSE"
-        bp_result=$(lissto blueprint create "$COMPOSE" --output json \
-            ${BRANCH:+--branch "$BRANCH"} \
-            ${GITHUB_ACTOR:+--author "$GITHUB_ACTOR"})
+        echo "📦 Creating blueprint..."
+        CMD="lissto blueprint create --output json"
+        [ -n "$INPUT_COMPOSE_FILE" ] && CMD="$CMD $INPUT_COMPOSE_FILE"
+        [ -n "$BRANCH" ] && CMD="$CMD --branch $BRANCH"
+        [ -n "$AUTHOR" ] && CMD="$CMD --author $AUTHOR"
+        
+        bp_result=$(eval $CMD)
         BLUEPRINT_ID=$(echo "$bp_result" | jq -r '.id')
         [ -z "$BLUEPRINT_ID" ] || [ "$BLUEPRINT_ID" = "null" ] && { echo "::error::Failed to create blueprint"; exit 1; }
         echo "✅ Blueprint: $BLUEPRINT_ID"
     fi
     
-    echo "🚀 Deploying to ${INPUT_ENVIRONMENT}"
-    result=$(lissto create stack --blueprint "$BLUEPRINT_ID" --env "$INPUT_ENVIRONMENT" --non-interactive --output json \
-        ${INPUT_BRANCH:+--branch "$INPUT_BRANCH"} \
-        ${INPUT_TAG:+--tag "$INPUT_TAG"} \
-        ${INPUT_COMMIT:+--commit "$INPUT_COMMIT"})
+    echo "🚀 Deploying stack..."
+    CMD="lissto create stack --blueprint $BLUEPRINT_ID --non-interactive --output json"
+    [ -n "$BRANCH" ] && CMD="$CMD --branch $BRANCH"
+    
+    result=$(eval $CMD)
     
     stack_id=$(echo "$result" | jq -r '.stack_id')
     stack_url=$(echo "$result" | jq -r '.exposed[0].url // empty')
@@ -73,14 +75,12 @@ action_deploy() {
 }
 
 action_update() {
-    require INPUT_ENVIRONMENT
+    echo "🔄 Updating stack..."
     
-    echo "🔄 Updating stack in ${INPUT_ENVIRONMENT}"
-    result=$(lissto update --env "$INPUT_ENVIRONMENT" --non-interactive --yes --output json \
-        ${INPUT_STACK:+--stack "$INPUT_STACK"} \
-        ${INPUT_BRANCH:+--branch "$INPUT_BRANCH"} \
-        ${INPUT_TAG:+--tag "$INPUT_TAG"} \
-        ${INPUT_COMMIT:+--commit "$INPUT_COMMIT"})
+    CMD="lissto update --non-interactive --yes --output json"
+    [ -n "$BRANCH" ] && CMD="$CMD --branch $BRANCH"
+    
+    result=$(eval $CMD)
     
     stack_id=$(echo "$result" | jq -r '.stack_id // .stack_name')
     status=$(echo "$result" | jq -r '.status')
